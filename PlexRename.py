@@ -21,20 +21,26 @@ def main():
           "If like ShowName SeasonNumber EpisodeNumber enter 2")
     filetype = int(input("Enter 1 or 2: \n"))
     filename = sys.argv[1]
-    if filetype == 1:
-        p = re.search("^.+S\d+", filename)
-        if p:
-            body = p.group(0)
 
     ext = find_needed_parts(filename)
     file_rename_pattern = "*." + ext
 
     for pathAndFilename in glob.iglob(file_rename_pattern):
-        p = re.search("^.+S\d+", pathAndFilename)
-        if p:
-            body = p.group(0)
-        body = body + '.' + ext
-        os.rename(pathAndFilename, body)
+        body = None
+        if filetype == 1:
+            p = re.search("^.+S\d+", pathAndFilename, flags=re.IGNORECASE)
+            if p:
+                body = p.group(0)
+        if filetype == 2:
+            p = re.search("^.+E\d+", pathAndFilename, flags=re.IGNORECASE)
+            if p:
+                body = p.group(0)
+        if body:
+            body = body + '.' + ext
+            os.rename(pathAndFilename, body)
+        else:
+            print("Something went wrong")
+            exit(-7)
 
 
 main()
